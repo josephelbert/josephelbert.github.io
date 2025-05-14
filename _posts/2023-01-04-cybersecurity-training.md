@@ -1,6 +1,6 @@
 ---
 title: "Cybersecurity Training"
-date: 2023
+date: 2023-01-04
 categories: [Training Resources]
 tags: [Learning, Training]
 ---
