@@ -39,9 +39,9 @@ social:
   links:
     # The first element serves as the copyright owner's link
     - https://github.com/josephelbert # change to your GitHub homepage
+    - https://www.linkedin.com/in/joseph-elbert/
     # Uncomment below to add more social links
     # - https://www.facebook.com/username
-    - https://www.linkedin.com/in/joseph-elbert/
 
 # Site Verification Settings
 webmaster_verifications:
@@ -97,7 +97,7 @@ theme_mode: # [light | dark]
 cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar: https://media.licdn.com/dms/image/v2/D4E35AQFpVwg32Htuxw/profile-framedphoto-shrink_200_200/B4EZaTHqC.GQAY-/0/1746224980490?e=1747854000&v=beta&t=pxW5pTUjXcONRXILl2JpOVA4hvAtL1RF1ZRvJUAohZI
+avatar:
 
 # The URL of the site-wide social preview image used in SEO `og:image` meta tag.
 # It can be overridden by a customized `page.image` in front matter.
