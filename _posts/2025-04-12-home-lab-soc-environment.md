@@ -3,6 +3,8 @@ title: "Home Lab: SOC Environment in Microsoft Azure"
 date: 2025-04-12
 categories: [Home Lab]
 tags: [Azure, Microsoft Sentinel, Log Analytics, KQL, SIEM, Home Lab, Cybersecurity Security Operations Center, Event ID 4625, Threat Detection, Geolocation Enrichment, SOC Analyst Skills]
+image:
+  path: /assets/img/home-lab/SOCsetup.png
 ---
 
 # Home Lab: SOC Environment in Microsoft Azure
