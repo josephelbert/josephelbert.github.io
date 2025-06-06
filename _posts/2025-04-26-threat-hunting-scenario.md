@@ -1,7 +1,7 @@
 ---
 title: "Threat Hunting Scenario"
 date: 2025-04-26
-categories: [Projects]
+categories: [Labs]
 tags: [Threat Hunting, Endpoint Monitoring, KQL, SIEM, MITRE ATT&CK, SOC Analyst Skills]
 image:
   path: /assets/img/threat-hunting-scenario/torbrowser.png

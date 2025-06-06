@@ -1,7 +1,7 @@
 ---
 title: "Network Forensics Analysis Report"
 date: 2025-02-20
-categories: [Projects]
+categories: [Labs]
 tags: [Network Forensics, PCAP Analysis, Wireshark, Malware Detection, IOC Extraction, Threat Hunting, Cybersecurity, Blue Team, SOC Analyst Skills, Digital Forensics, Incident Response, OSINT]
 image:
   path: /assets/img/network-forensics-analysis-report/networkforensics.jpg
