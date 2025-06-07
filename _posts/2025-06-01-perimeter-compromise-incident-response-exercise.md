@@ -1,8 +1,8 @@
 ---
 title: "Perimeter Compromise Incident Response Exercise"
-date: 2025-06-02
+date: 2025-06-01
 categories: [Labs]
-tags: [Incident Response, Web Server Security, Remote File Inclusion, PHP Ransomware, FortiGate, Splunk, MITRE ATT&CK, Drupal Vulnerability, SOC Skills, Blue Team, Log Analysis, Perimeter Compromise]
+tags: [Incident Response, Web Server Security, Remote File Inclusion, PHP Ransomware, FortiGate, Splunk, MITRE ATT&CK, Drupal Vulnerability, SOC Analyst Skills, Blue Team, Log Analysis, Perimeter Compromise]
 image:
   path: /assets/img/perimeter-compromise-exercise/rfimain.png
 ---
@@ -15,7 +15,7 @@ In cybersecurity, perimeter defense refers to the implementation of security mea
 
 In this lab, my task will be to investigate a perimeter breach incident, gather indicators of compromise (IOCs), figure out the attack chain, and provide recommendations to defend against similar attacks in the future. My investigation will facilitate recovery from the incident. At the end of the lab, I will be able to check the restored service.
 
-## Overview
+## Objectives
 
 - Identify and respond to a perimeter breach
 - Analyze logs from web servers and FortiGate UTM
