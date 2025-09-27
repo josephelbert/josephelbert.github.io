@@ -2,7 +2,7 @@
 title: "Perimeter Compromise Incident Response Challenge"
 date: 2025-06-02
 categories: [Labs]
-tags: [Incident Response, Splunk, Incident Response, Perimeter Breach, Data Exfiltration, Drupalgeddon2, Splunk, FortiGate IPS, Log Analysis, Credential Theft, Data Exfiltration, Web Shell, MITRE ATT&CK, SOC Analyst Skills, Threat Detection]
+tags: [Incident Response, Splunk, Perimeter Breach, Data Exfiltration, Drupalgeddon2, Splunk, FortiGate IPS, Log Analysis, Credential Theft, Data Exfiltration, Web Shell, MITRE ATT&CK, SOC Analyst Skills, Threat Detection]
 image:
   path: /assets/img/perimeter-compromise-challenge/mainpicture.png
 ---
@@ -58,8 +58,7 @@ The adversary was able to dump and exfiltrate the database. In the following ste
 
 The adversary used valid credentials to dump the database. Maybe the logs contain information about how the credentials were acquired...
 
-Where did the adversary get the database credentials?
-Hint: The attacker searched for a file. Use `CommandLine=”*” | table CommandLine`\
+Where did the adversary get the database credentials?\
 `settings.php`
 
 ![Image](/assets/img/perimeter-compromise-challenge/filewithcredentials.png)

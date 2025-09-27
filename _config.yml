@@ -16,7 +16,7 @@ timezone:
 
 title: Joseph Elbert # the main title
 
-tagline: Cybersecurity | CompTIA Sec+ | Certified Cyber Defender
+tagline: Cybersecurity | CompTIA Sec+ | Certified Cyber Defender | DFIR
 
 description: >- # used by seo meta and the atom feed
   josephelbert.github.io personal cybersecurity focused blog
@@ -191,6 +191,9 @@ defaults:
     values:
       layout: page
       permalink: /:title/
+
+page:
+  lastmod: false
 
 sass:
   style: compressed
