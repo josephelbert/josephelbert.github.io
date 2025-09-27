@@ -1,6 +1,6 @@
 ---
 title: "Hack The Box: Holmes CTF 2025 - The Card"
-date: 2025-09-28
+date: 2025-09-26
 categories: [Hack The Box]
 tags: [CTF, Blue Team, Digital Forensics, Log Analysis, Investigation, Threat Intelligence, IOCs, Threat Hunting]
 image:
