@@ -2,14 +2,14 @@
 title: "Hack The Box: Holmes CTF 2025 - The Card"
 date: 2025-09-26
 categories: [Hack The Box]
-tags: [CTF, Blue Team, Digital Forensics, Log Analysis, Investigation, Threat Intelligence, IOCs, Threat Hunting]
+tags: [Hack The Box, CTF, Blue Team, Digital Forensics, Log Analysis, Investigation, Threat Intelligence, IOCs, Threat Hunting]
 image:
   path: /assets/img/hack-the-box/holmes-ctf-2025/holmes-ctf-2025-main.jpg
 ---
 
 # Hack The Box: Holmes CTF 2025 - The Card
 
-## Overiew
+## Overview
 
 This is my first writeup with the new Hack the Box CTF. It is called Holmes CTF 2025 and it is a Blue Team capture the flag event where you play as a detective and cyber defender. This CTF truly tested my network and log analysis skills and I learned a lot of new ways to approach these types of challenge. This writeup will show my thought process and methodology on how I approached this first CTF challenge.
 
@@ -132,4 +132,4 @@ I checked on the "Services" tab to see the banner from suspicious "unknown" serv
 
 ## Conclusion
 
-This first challenge was fun. I learned how to navigate threat intelligence platforms to help enrich the IOCs I found. I know that the SHA256 is a unique hash that can help identify malware on multiple machines. I also learned different types of IOCs related to web shell creation and database exfiltration. Now its time to move onto level two of the Hack the Box Holmes CTF 2025.
+This first challenge was really fun. This challenge helped me navigate threat intelligence platforms to help enrich any IOCs I find in log files. I know that the SHA256 is a unique hash that can help identify malware. I am able use the hash to find malware on multiple endpoints as well. I also learned different types of IOCs related to web shell creation and database exfiltration. Now its time to move onto level two of the Hack the Box Holmes CTF 2025 - The Enduring Echo.
