@@ -115,7 +115,7 @@ Question 11: Among the tools that the attacker staged was a browser credential h
 
 I observed that the attacker also downloaded the 'webbrowserpassview' tool. Using the 'Registry Explorer' tool, I loaded the NTUSER.dat file from `TRIAGE_IMAGE_COGWORK-CENTRAL\C\Users\Cogwork_Admin`. Upon checking the `Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist` registry sub key, I observed that the 'Focus Time' was '0d, 0h, 00m, and 08s', which indicates that the application ran for 8 seconds, or 8000 milliseconds.
 
-![Image](/assets/img/hack-the-box/holmes-ctf-2025/the-watchmans-residue/the_watchmans_residue_456_creds.png)
+![Image](/assets/img/hack-the-box/holmes-ctf-2025/the-watchmans-residue/the_watchmans_residue_question_11.png)
 
 ## Question 12
 
@@ -202,7 +202,7 @@ acquired file (critical):cutiepie14
 
 ## Conclusion
 
-This medium-difficulty challenge was an incredible learning experience that expanded my skills across multiple domains of digital forensics and incident response. Here's what I took away:
+This challenge was an incredible learning experience that expanded my skills across multiple domains of digital forensics and incident response. Here's what I took away from this:
 
 ### Technical Skills Gained
 
