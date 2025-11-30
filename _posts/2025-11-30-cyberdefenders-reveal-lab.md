@@ -23,7 +23,7 @@ The system under investigation has been identified as Windows 10, with the NT ro
 python3 ~/volatility3/vol.py -f temp_extract_dir/192-Reveal.dmp windows.info
 ```
 
-![Image](/assets/img/cyberdefenders/reveal-lab/image1.png)
+![Image](/assets/img/cyberdefenders/reveal-lab/recon.png)
 
 ## Investigation Process
 
