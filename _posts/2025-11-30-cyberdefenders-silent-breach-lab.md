@@ -1,10 +1,10 @@
 ---
 title: "CyberDefenders: Silent Breach Lab"
 date: 2025-11-30
-categories: [CyberDefenders]
+categories: [CyberDefenders/Endpoint Forensics]
 tags: [Endpoint Forensics, Execution, FTK Imager, Text Editor, SQLite Viewer, Strings, CyberChef]
 image:
-  path: /assets/img/cyberdefenders/silent-breach/main.png
+  path: /assets/img/cyberdefenders/silent-breach-lab/main.png
 ---
 
 # CyberDefenders: Silent Breach Lab
@@ -25,13 +25,13 @@ To begin the investigation of this compromised system, we need to examine the fo
 
 Upon examining the Downloads folder, we can see several files that warrant investigation. Among these files, we notice an executable file with a suspicious filename, using double extensions, that stands out from typical user downloads.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question1.0.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question1.0.png)
 
 The presence of executable files in the Downloads folder should always be treated with caution during forensic analysis, as attackers frequently use this location to stage their malicious payloads before execution. We can extract the file hashes using FTK Imager.
 
 Once we obtain the hashes of the executable file, we can leverage threat intelligence platforms like `VirusTotal` to gather additional context about the file's malicious nature. VirusTotal is a free online service that analyzes files and URLs for malicious content using multiple antivirus engines and threat detection tools. By submitting the MD5 hash to VirusTotal, we can determine whether this file has been previously identified as malicious by the security community. The analysis reveals that multiple security vendors have flagged this file as malicious, confirming our suspicions about its nature.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question1.1.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question1.1.png)
 
 ## Question 2
 
@@ -39,7 +39,7 @@ Question 2: What is the URL from which the file was downloaded?
 
 Digital forensics often requires understanding user behavior patterns, and web browsers serve as rich sources of evidence that can reveal how malware was delivered to a compromised system. Modern web browsers store extensive metadata about user activities, including visited websites, download history, and cached content, all of which can provide crucial insights into the attack vector used by threat actors. When we examine the application data folders within the user profile, we can observe that the user had multiple web browsers installed on the system, specifically Google Chrome and Microsoft Edge.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question2.0.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question2.0.png)
 
 This is a common configuration in many enterprise environments where users may have access to multiple browsers for different purposes or compatibility requirements. Each browser maintains its own separate database files to store user activity, which means we need to examine each browser's artifacts individually to get a complete picture of the user's web activity during the timeframe of the security incident.
 
@@ -47,11 +47,11 @@ The browser history database is a SQLite database file that contains detailed re
 
 File Path: `C:\Users\ethan\AppData\Local\Microsoft\Edge\User Data\Default\History`
 
-![Image](/assets/img/cyberdefenders/silent-breach/question2.1.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question2.1.png)
 
 To extract and analyze this crucial evidence, we need to export the History database file from the forensic image using FTK Imager. Once extracted, we can open the History database in our SQLite viewer. We need to focus our attention on the downloads table, which specifically tracks files that have been downloaded through the browser. This table contains several important fields including the URL from which files were downloaded, the local file path where they were saved, timestamps indicating when the download occurred, and various metadata about the download process. By examining the downloads table, we can identify entries that correspond to the timeframe of our security incident and specifically look for downloads to the Downloads folder where we discovered the malicious executable.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question2.2.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question2.2.png)
 
 The analysis reveals multiple download entries in the database, but we can identify the specific entry that corresponds to our malicious file by correlating the timestamp and file path information. The downloads table shows that the suspicious executable was downloaded from the URL:
 `http://192.168.16.128:8000/IMF-Info.pdf.exe`
@@ -70,17 +70,17 @@ Understanding user activities and communications can provide crucial insights in
 
 Next, I will use FTK Imager's Image Mounting tool to view the NTUSER.dat file.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question4.0.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question4.0.png)
 
 To analyze the NTUSER.dat registry hive effectively, we can utilize `RegRipper`. RegRipper contains numerous plugins that can parse different registry keys and present the information in a human-readable format, making it invaluable for us to quickly extract meaningful data from complex registry structures. When we run RegRipper against the NTUSER.dat hive with the UserAssist plugin, we can see a chronological list of executed programs, including when Windows Mail was accessed, which helps us establish the timeframe when email communications occurred.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question4.1.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question4.1.png)
 
 The analysis reveals that Windows Mail was indeed used during the incident timeframe, which confirms that email communications may contain relevant evidence about the security breach. Windows Mail stores it's email data in various formats and locations, with one of the most important being the `HxStore.hxd` file, which contains the actual email message content. This file uses a proprietary storage format, but we can extract meaningful information using string extraction techniques.
 
 File Path: `C:\Users\ethan\AppData\Local\Packages\microsoft.windowscommunicationsapps_8wekyb3d8bbwe\LocalState\HxStore.hxd`
 
-![Image](/assets/img/cyberdefenders/silent-breach/question4.2.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question4.2.png)
 
 The HxStore.hxd file essentially serves as a database that contains email messages, attachments, and metadata, all stored in a binary format that requires specialized tools or techniques to access.
 
@@ -88,7 +88,7 @@ To recover email content from the HxStore.hxd file, we first export it from the 
 
 I first used `strings64.exe` from the SysInterals Suite on Windows in order to extract the strings from the HxStore.hxd file. I sent the output to a file called HxStore.txt so it would be easier to view the strings.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question4.3.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question4.3.png)
 
 ## Question 5
 
@@ -98,7 +98,7 @@ To understand the full scope of the malicious executable's capabilities, we need
 
 Using FTK Imager, we extract the malicious executable file from the forensic image to our isolated analysis environment. Once we have the file exported, we can apply strings to extract human-readable text from the binary executable. When malware authors embed PowerShell scripts within their executables, these scripts often remain as readable text strings within the binary, making them accessible through string extraction techniques. After running strings on the malicious executable, we obtain a substantial amount of output that includes various text strings, function names, library references, and potentially embedded script content. To focus our analysis on PowerShell-related functionality, we can search through this output for keywords related to PowerShell execution, such as "powershell", "ps1", or specific PowerShell cmdlets and syntax patterns. This targeted search reveals the presence of obfuscated PowerShell code embedded within the executable.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question5.0.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question5.0.png)
 
 The embedded PowerShell script exhibits multiple layers of obfuscation, including base64 encoding, string concatenation, variable substitution, and other techniques commonly used by attackers to hide malicious functionality. Obfuscation serves multiple purposes in malware development, including evading signature-based detection systems, making reverse engineering more time-consuming, and hiding the true intent of the malicious code from both automated analysis tools and human analysts. However, despite these obfuscation techniques, we can extract the script content and work to deobfuscate it to reveal its underlying functionality.
 
@@ -106,7 +106,7 @@ To properly analyze the obfuscated PowerShell script, we extract it to a separat
 
 I made a new mal_script.ps1 file and added the obfuscated parts to it. I used the Word Wrap view option in VSCode to make the file easier to see in the code editor.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question5.1.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question5.1.png)
 
 ## Question 6
 
@@ -116,17 +116,17 @@ Having successfully analyzed the malicious PowerShell script and identified its 
 
 The first step in our file recovery process involves extracting the encrypted files from the forensic image using FTK Imager. When we examine the file system structure, we can identify the encrypted files based on their file extensions, timestamps, and the context provided by our previous analysis.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question6.0.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question6.0.png)
 
 Once we have successfully extracted the encrypted files to our analysis environment, we need to modify the PowerShell script to perform decryption operations instead of encryption. This modification involves reversing the cryptographic operations performed by the original malicious script while maintaining the same key material and algorithm parameters that were used during the initial encryption process.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question6.1.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question6.1.png)
 
 We configure the script to process the encrypted files we extracted from the forensic image, applying the AES decryption algorithm with the hardcoded password we identified earlier. The script processes each encrypted file individually, reading the encrypted content, applying the decryption transformation, and writing the recovered plaintext data to new output files with their original file extensions restored.
 
 When we execute the modified decryption script against the encrypted files, the process successfully recovers the original file content, allowing us to access the data that was encrypted during the attack.
 
-![Image](/assets/img/cyberdefenders/silent-breach/question6.2.png)
+![Image](/assets/img/cyberdefenders/silent-breach-lab/question6.2.png)
 
 ## Conclusion
 

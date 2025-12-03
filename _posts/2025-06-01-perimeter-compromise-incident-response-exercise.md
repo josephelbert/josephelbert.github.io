@@ -1,7 +1,7 @@
 ---
 title: "Perimeter Compromise Incident Response Exercise"
 date: 2025-06-01
-categories: [Labs]
+categories: [RangeForce]
 tags: [Incident Response, Web Server Security, Remote File Inclusion, PHP Ransomware, FortiGate, Splunk, MITRE ATT&CK, Drupal Vulnerability, SOC Analyst Skills, Blue Team, Log Analysis, Perimeter Compromise]
 image:
   path: /assets/img/perimeter-compromise-exercise/rfimain.png

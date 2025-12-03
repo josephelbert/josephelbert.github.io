@@ -1,7 +1,7 @@
 ---
 title: "Web Defacement Incident Response Lab"
 date: 2025-05-31
-categories: [Labs]
+categories: [RangeForce]
 tags: [Incident Response, Web Defacement, Drupalgeddon2, CVE-2018-7600, Remote Code Execution, Splunk, Log Analysis, Threat Detection, MITRE ATT&CK, Blue Team, Web Shell, SOC Analyst Skills, Web Server Security, Cybersecurity Investigation, Splunk]
 image:
   path: /assets/img/web-defacement-incident-response-lab/mainsiteimage.png

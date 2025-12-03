@@ -16,7 +16,7 @@ Although Microsoft Defender for Cloud was not integrated during this project, I 
 
 ## Objectives
 - Deploy a honeypot virtual machine (VM) in Azure.
-- Ingest Windows security logs using Log Analytics and Microsoft Sentinel.
+- Ingest Windows security logs using Log Analytics Workspace and Microsoft Sentinel.
 - Simulate attack behavior (failed logins, brute force attempts).
 - Analyze logs using Kusto Query Language (KQL).
 - Enrich logs with geolocation data using a custom watchlist.

@@ -1,7 +1,7 @@
 ---
 title: "Perimeter Compromise Incident Response Challenge"
 date: 2025-06-02
-categories: [Labs]
+categories: [RangeForce]
 tags: [Incident Response, Splunk, Perimeter Breach, Data Exfiltration, Drupalgeddon2, Splunk, FortiGate IPS, Log Analysis, Credential Theft, Data Exfiltration, Web Shell, MITRE ATT&CK, SOC Analyst Skills, Threat Detection]
 image:
   path: /assets/img/perimeter-compromise-challenge/mainpicture.png
