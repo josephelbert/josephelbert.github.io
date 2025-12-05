@@ -1,7 +1,7 @@
 ---
 title: "CyberDefenders: Reveal Lab"
 date: 2025-11-30
-categories: [CyberDefenders/Endpoint Forensics]
+categories: [CyberDefenders, Endpoint Forensics]
 tags: [Endpoint Forensics, Defense Evasion, Discovery, Volatility 3]
 image:
   path: /assets/img/cyberdefenders/reveal-lab/main.png

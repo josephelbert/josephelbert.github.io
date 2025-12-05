@@ -1,7 +1,7 @@
 ---
 title: "CyberDefenders: Brave Lab"
 date: 2025-12-02
-categories: [CyberDefenders/Endpoint Forensics]
+categories: [CyberDefenders, Endpoint Forensics]
 tags: [Endpoint Forensics, Execution, Discovery, Command and Control, Volatility 3, CertUtil, HxD]
 image:
   path: /assets/img/cyberdefenders/brave-lab/main.png
@@ -193,4 +193,4 @@ The `UserAssist` registry key is a crucial artifact for building a timeline of u
 
 ## Conclusion
 
-This was another fun lab. I learned a lot more about different Volatility3 plugins and how to searhc for malicious activity on Windows memory dumps. The biggest hurdle I had for this challenge was that my instance of Volatility3 didn't have the correct dependecies installed in order to function correctly. I spent a long time (about an hour) trying different versions and troublshooting various solutions, but the solution that worked was that I just needed to read the README file all the way through! Memory forensics is insanely interesting in the fact that you can draw such accurate timelines of malicious activity and find the root cause of that activity. I love digital forensics and DFIR.
+This was another fun lab. I learned a lot more about different Volatility3 plugins and how to search for malicious activity on Windows memory dumps. The biggest hurdle I had for this challenge was that my instance of Volatility3 didn't have the correct dependecies installed in order to function correctly. I spent a long time (about an hour) trying different versions and troublshooting various solutions, but the solution that worked was that I just needed to read the README file all the way through! Memory forensics is insanely interesting in the fact that you can draw such accurate timelines of malicious activity and find the root cause of that activity. I love digital forensics and DFIR.

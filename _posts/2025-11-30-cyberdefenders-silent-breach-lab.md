@@ -1,7 +1,7 @@
 ---
 title: "CyberDefenders: Silent Breach Lab"
 date: 2025-11-30
-categories: [CyberDefenders/Endpoint Forensics]
+categories: [CyberDefenders, Endpoint Forensics]
 tags: [Endpoint Forensics, Execution, FTK Imager, Text Editor, SQLite Viewer, Strings, CyberChef]
 image:
   path: /assets/img/cyberdefenders/silent-breach-lab/main.png
