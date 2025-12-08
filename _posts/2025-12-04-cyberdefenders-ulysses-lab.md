@@ -41,7 +41,7 @@ Question 2: How many unique failed login attempts were there?
 
 To determine the number of unique failed login attempts, the investigation involves analyzing the `auth.log` file for failed login events related to the user identified in the previous question.
 
-The `strings` utility extracts readable text strings from the log file. This is particularly useful when analyzing files that may contain both human-readable and non-human-readable content. The extracted text is then piped (`|`) to the `grep` command, which performs a search for specific patterns within the text. I also use the option `-i` to ignore case. The first pattern I used for grep was `"Failed"`. That is then also piped (|) to grep again with the pattern `"ulysses"`. These patterns are crafted to identify "failed" login attempts targeting the "ulysses" account.
+The `strings` utility extracts readable text strings from the log file. This is particularly useful when analyzing files that may contain both human-readable and non-human-readable content. The extracted text is then piped (`|`) to the `grep` command, which performs a search for specific patterns within the text. I also used the option `-i` to ignore case. The first pattern I used for grep was `"Failed"`. That is then also piped (`|`) to grep again with the pattern `"ulysses"`. These patterns are crafted to identify "failed" login attempts targeting the "ulysses" account.
 
 The output from grep is then piped to `wc -l`, which is used to count the number of lines in a file or from standard input. Each matching line represents a unique instance of a failed login attempt recorded in the `auth.log` file. The resulting count provides the number of failed login attempts targeting the `ulysses` account.
 

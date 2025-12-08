@@ -1,7 +1,7 @@
 ---
 title: "Hack The Box: Holmes CTF 2025 - The Enduring Echo"
 date: 2025-09-28
-categories: [Hack The Box]
+categories: [Hack The Box, Holmes CTF 2025]
 tags: [Hack The Box, CTF, Blue Team, Digital Forensics, Log Analysis, Investigation, Threat Intelligence, IOCs, Threat Hunting]
 image:
   path: /assets/img/hack-the-box/holmes-ctf-2025/holmes-ctf-2025-main.jpg
