@@ -1,6 +1,6 @@
 ---
 title: "CyberDefenders: LGDroid Lab"
-date: 2025-12-06
+date: 2025-12-07
 categories: [CyberDefenders, Endpoint Forensics]
 tags: [Endpoint Forensics, Credential Access, DB Browser for SQLite, Epoch Converter, ssim-calculator]
 image:
@@ -19,7 +19,7 @@ By following my walkthrough, you will learn how to systematically approach foren
 
 ## Question 1
 
-Question 1: What is the email address of Zoe Washburne?
+**Question 1: What is the email address of Zoe Washburne?**
 
 To determine the email address of Zoe Washburne, we start by analyzing the `contacts3.db` file using a database analysis tool such as `DB Browser for SQLite`. This database is part of the extracted artifacts from the Android phone dump. SQLite databases are commonly used by mobile devices to store structured data such as contacts, messages, or app data, making them critical in forensic investigations.
 
@@ -33,7 +33,7 @@ While the domain `.null` may seem unusual, it may signify placeholder or incompl
 
 ## Question 2
 
-Question 2: What was the device time in UTC at the time of acquisition? (hh:mm:ss)
+**Question 2: What was the device time in UTC at the time of acquisition? (hh:mm:ss)**
 
 To determine the device's time in UTC at the moment of acquisition, we begin by examining the relevant files within the provided Android dump. In the directory labeled `Live Data`, one of the files, named `device_datetime_utc.txt`, contains the specific timestamp information we need.
 
@@ -49,7 +49,7 @@ The device time at the moment of acquisition, expressed in UTC, is therefore con
 
 ## Question 3
 
-Question 3: To determine the time at which the Tor Browser was downloaded in UTC, we analyze the database file named `downloads.db` using a forensic tool like `DB Browser for SQLite`. This database contains information about files downloaded on the Android device, including metadata such as file names, download paths, timestamps, and file sizes.
+**Question 3: To determine the time at which the Tor Browser was downloaded in UTC, we analyze the database file named `downloads.db` using a forensic tool like `DB Browser for SQLite`. This database contains information about files downloaded on the Android device, including metadata such as file names, download paths, timestamps, and file sizes.**
 
 The Tor Browser, visible in the data under the uri column, is listed with the full path `/storage/emulated/0/Download/tor-browser-10.0.15-android-armv7-multi.apk`. This entry corresponds to a downloadable Android package file (`.apk`) for the Tor Browser, a privacy-focused web browser designed to anonymize internet activity by routing traffic through the Tor network. The Tor network encrypts and reroutes data through multiple nodes, providing anonymity and bypassing censorship. Forensic analysis of such downloads can reveal insights into a user's intent or behavior.
 
@@ -63,7 +63,7 @@ This analysis demonstrates the importance of understanding database structures a
 
 ## Question 4
 
-Question 4: What time did the phone charge to 100% after the last reset? (hh:mm:ss)
+**Question 4: What time did the phone charge to 100% after the last reset? (hh:mm:ss)**
 
 To determine the exact time when the phone charged to 100% after the last reset, we analyze the `batterystats.txt` file. This file logs detailed information about the battery's behavior, including charging states, power consumption, and device events. It is an integral part of Android's diagnostic data and can provide insight into device usage patterns and charging habits, which are crucial for timeline reconstruction in forensic investigations.
 
@@ -86,7 +86,7 @@ Analyzing such logs can also offer insights into device usage, patterns of charg
 
 ## Question 5
 
-Question 5: What is the password for the most recently connected WIFI access point?
+**Question 5: What is the password for the most recently connected WIFI access point?**
 
 To uncover the password for the most recently connected Wi-Fi access point, we then examine the file `com.android.providers.settings.data` located in the `adb-data/apps/com.android.providers.settings` directory.
 
@@ -106,7 +106,7 @@ This discovery process underscores the importance of systematically analyzing co
 
 ## Question 6
 
-Question 6: What app was the user focused on at 2021-05-20 14:13:27?
+**Question 6: What app was the user focused on at 2021-05-20 14:13:27?**
 
 To determine which app the user was focused on at the specific timestamp `2021-05-20 14:13:27`, we analyze the file `usage_stats.txt`. This file is part of the extracted forensic data and provides a log of app usage events on the Android device. The log contains detailed information about user interactions with applications, including when apps move to the foreground or background, changes in standby state, and other usage-related metrics.
 
@@ -122,7 +122,7 @@ The `MOVE_TO_FOREGROUND` event is particularly relevant in identifying the app c
 
 ## Question 7
 
-Question 7: How much time did the suspect watch Youtube on 2021-05-20? (hh:mm:ss)
+**Question 7: How much time did the suspect watch Youtube on 2021-05-20? (hh:mm:ss)**
 
 To determine how much time the suspect spent watching YouTube on May 20, 2021, we analyze the `usage_stats.txt` file, which logs app activity, including when apps move to the foreground (active) or background (inactive). These logs are critical for calculating the duration of app usage.
 
@@ -151,7 +151,7 @@ This analysis demonstrates how forensic investigators can utilize app usage logs
 
 ## Question 8
 
-Question 8: What is the structural similarity metric for the image "suspicious.jpg" compared to a visually similar image taken with a mobile phone?
+**Question 8: What is the structural similarity metric for the image "suspicious.jpg" compared to a visually similar image taken with a mobile phone?**
 
 To determine the structural similarity metric (SSIM) between `suspicious.jpg` and a visually similar image captured on the mobile phone (`20210429_151535.jpg`), we can use a Python script.
 

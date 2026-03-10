@@ -44,6 +44,6 @@ The environment was designed to practice:
 ## What I Learned
 - Configuring and managing domain services in Windows Server
 - How endpoint misconfigurations can be exploited
-- Using detection tools (Security Onion, Wazuh) to monitor real threats
+- Using network and endpoint detection tools like Security Onion and Wazuh to monitor real threats
 - Understanding the attacker mindset and linking behavior to detection logic
 - Importance of segmentation, logging, and least privilege in network security
