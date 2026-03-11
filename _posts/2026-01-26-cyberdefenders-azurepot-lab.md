@@ -56,6 +56,5 @@ This line indicates that the script `.remove.sh`, located in the `/root` directo
 **Question 2: File sdb.vhd -> The script in the Question #1 terminates processes associated with two Bitcoin miner malware files. What is the name of 1st malware file?**
 
 
-
-> [!INFO]
 > **Work in Progress:** This writeup is currently under construction. Full analysis and solutions will be added soon!
+{: .prompt-info }
