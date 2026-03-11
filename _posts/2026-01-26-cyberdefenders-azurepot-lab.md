@@ -57,5 +57,5 @@ This line indicates that the script `.remove.sh`, located in the `/root` directo
 
 
 
->[!NOTE]
->I am still working on this lab. Full analysis will be released soon!
+> [!INFO]
+> **Work in Progress:** This writeup is currently under construction. Full analysis and solutions will be added soon!
