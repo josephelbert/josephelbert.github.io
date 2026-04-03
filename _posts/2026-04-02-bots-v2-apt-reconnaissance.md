@@ -1,7 +1,7 @@
 ---
 title: "Hunting an APT with Splunk: Reconnaissance (BOTS v2)"
-date: 2026-04-02 00:00:00 -0500
-categories: [Threat Hunting, Write-Ups]
+date: 2026-04-02
+categories: [Splunk, BOTSv2]
 tags: [splunk, bots, apt, threat-hunting, mitre-attack, spl, osint, blue-team]
 description: A walkthrough of two hypothesis-driven threat hunts against the Splunk BOTS v2 dataset, uncovering North Korean reconnaissance activity against a fictional brewing company using user agent string analysis and open-source intelligence.
 toc: true
