@@ -30,10 +30,10 @@ Both hunts operate in the **PRE** phase of the MITRE ATT&CK framework — tactic
 
 The kill chain stages covered here map to:
 
-| Kill Chain Stage | ATT&CK Tactic | Techniques |
-|---|---|---|
-| Reconnaissance | Reconnaissance | T1593, T1593.001, T1593.002 |
-| Reconnaissance | Reconnaissance | T1589 — Gather Victim Identity Information |
+| Kill Chain Stage | ATT&CK Tactic  | Techniques                                 |
+| ---------------- | -------------- | ------------------------------------------ |
+| Reconnaissance   | Reconnaissance | T1593, T1593.001, T1593.002                |
+| Reconnaissance   | Reconnaissance | T1589 — Gather Victim Identity Information |
 
 A key principle from the course material: **hunts do not exist in a silo**. Hunting for one technique will often surface artifacts of another. Hunting for PowerShell will yield data encoding evidence. Hunting for user agent anomalies will lead to file download behavior. Follow the thread.
 
@@ -97,11 +97,11 @@ index=botsv2 sourcetype=stream:http
 | stats count by src dest
 ```
 
-| Source IP | Destination IP | Count | System |
-|---|---|---|---|
-| 136.0.0.125 | 172.31.4.249 | 8 | brewertalk.com (gacrux) |
-| 136.0.2.138 | 172.31.4.249 | 24 | brewertalk.com (gacrux) |
-| 85.203.47.86 | 172.31.6.251 | 51 | www.froth.ly (eridanus) |
+| Source IP    | Destination IP | Count | System                  |
+| ------------ | -------------- | ----- | ----------------------- |
+| 136.0.0.125  | 172.31.4.249   | 8     | brewertalk.com (gacrux) |
+| 136.0.2.138  | 172.31.4.249   | 24    | brewertalk.com (gacrux) |
+| 85.203.47.86 | 172.31.6.251   | 51    | www.froth.ly (eridanus) |
 
 Three source IPs used this user agent string across two different internal servers.
 
@@ -119,24 +119,24 @@ index=botsv2 sourcetype=stream:http dest=85.203.47.86 src=172.31.6.251 | stats c
 
 **Step 6 — OSINT on 85.203.47.86:**
 
-| Tool | Finding |
-|---|---|
-| DomainTools WHOIS | Hong Kong, ASN 133752, LEASEWEB-APAC-HKG-10 |
-| RIPE WHOIS | VPN-Services, 2 Chun Yat Street, Tseung Kwan O Industrial Estate HK |
-| Team Cymru IP-to-ASN | `AS133752 \| 85.203.47.86 \| LEASEWEB APAC, HK` |
-| Route lookup | 85.203.0/18 via **ExpressVPN / Falco Networks (AS45187)** |
+| Tool                 | Finding                                                             |
+| -------------------- | ------------------------------------------------------------------- |
+| DomainTools WHOIS    | Hong Kong, ASN 133752, LEASEWEB-APAC-HKG-10                         |
+| RIPE WHOIS           | VPN-Services, 2 Chun Yat Street, Tseung Kwan O Industrial Estate HK |
+| Team Cymru IP-to-ASN | `AS133752 \| 85.203.47.86 \| LEASEWEB APAC, HK`                     |
+| Route lookup         | 85.203.0/18 via **ExpressVPN / Falco Networks (AS45187)**           |
 
 The attacker routed traffic through an **ExpressVPN exit node in Hong Kong** — a common tradecraft technique for masking true origin. The use of a commercial VPN means this IP alone cannot establish attribution.
 
 ### Findings
 
-| IOC | Value |
-|---|---|
-| Suspicious User Agent | `NaenaraBrowser/3.5b4` (DPRK state browser) |
-| Source IP | 85.203.47.86 (ExpressVPN / Hong Kong) |
-| ASN | AS133752 — LEASEWEB APAC HK |
-| Additional Source IPs | 136.0.0.125, 136.0.2.138 (hit brewertalk.com) |
-| Destination | www.froth.ly (172.31.6.251) — server: eridanus |
+| IOC                   | Value                                          |
+| --------------------- | ---------------------------------------------- |
+| Suspicious User Agent | `NaenaraBrowser/3.5b4` (DPRK state browser)    |
+| Source IP             | 85.203.47.86 (ExpressVPN / Hong Kong)          |
+| ASN                   | AS133752 — LEASEWEB APAC HK                    |
+| Additional Source IPs | 136.0.0.125, 136.0.2.138 (hit brewertalk.com)  |
+| Destination           | www.froth.ly (172.31.6.251) — server: eridanus |
 
 > **Important:** The presence of the Naenara user agent does **not** establish attribution to the DPRK. A sophisticated attacker could spoof any user agent string. What it establishes is an anomaly worth investigating further — which is exactly what a threat hunt is designed to do.
 
@@ -163,15 +163,15 @@ T1593 covers adversaries who search freely available websites and company domain
 
 By clicking into the `http_content_type` field within the 51 events from the Naenara user agent, content type distribution revealed:
 
-| Content Type | Count | % |
-|---|---|---|
-| text/html | 30 | 58.8% |
-| text/javascript | 9 | 17.6% |
-| text/css | 7 | 13.7% |
-| text/html; charset=UTF-8 | 2 | 3.9% |
+| Content Type                                                          | Count | %        |
+| --------------------------------------------------------------------- | ----- | -------- |
+| text/html                                                             | 30    | 58.8%    |
+| text/javascript                                                       | 9     | 17.6%    |
+| text/css                                                              | 7     | 13.7%    |
+| text/html; charset=UTF-8                                              | 2     | 3.9%     |
 | **application/vnd.openxmlformats-officedocument.spreadsheetml.sheet** | **1** | **1.9%** |
-| image/jpeg | 1 | 1.9% |
-| image/png | 1 | 1.9% |
+| image/jpeg                                                            | 1     | 1.9%     |
+| image/png                                                             | 1     | 1.9%     |
 
 An Excel spreadsheet (`.xlsx`) was served to this browser. That is not a typical web page asset.
 
@@ -184,31 +184,31 @@ index=botsv2 sourcetype=stream:http site=www.froth.ly
 | table _time src dest uri_path url
 ```
 
-| Timestamp | Source | Destination | File | Full URL |
-|---|---|---|---|---|
+| Timestamp           | Source       | Destination  | File                           | Full URL                                          |
+| ------------------- | ------------ | ------------ | ------------------------------ | ------------------------------------------------- |
 | 2017-08-05 01:15:49 | 85.203.47.86 | 172.31.6.251 | `/files/company_contacts.xlsx` | `http://www.froth.ly/files/company_contacts.xlsx` |
 
 **Hypothesis confirmed.** The attacker downloaded `company_contacts.xlsx` from Frothly's publicly accessible web server on **August 5, 2017 at 1:15 AM** — nearly three days before the bulk of the Naenara browsing activity on 8/8. This file likely contained employee names, email addresses, phone numbers, and org structure — exactly the kind of targeting data needed for spearphishing.
 
 ### Findings
 
-| Finding | Detail |
-|---|---|
-| File downloaded | `company_contacts.xlsx` |
-| Download timestamp | 2017-08-05 01:15:49 AM |
-| Source IP | 85.203.47.86 |
-| Destination server | eridanus (172.31.6.251 / www.froth.ly) |
-| MITRE Technique | T1589 — Gather Victim Identity Information |
+| Finding            | Detail                                     |
+| ------------------ | ------------------------------------------ |
+| File downloaded    | `company_contacts.xlsx`                    |
+| Download timestamp | 2017-08-05 01:15:49 AM                     |
+| Source IP          | 85.203.47.86                               |
+| Destination server | eridanus (172.31.6.251 / www.froth.ly)     |
+| MITRE Technique    | T1589 — Gather Victim Identity Information |
 
 ---
 
 ## Attack Timeline
 
-| Timestamp | Event | ATT&CK Technique |
-|---|---|---|
+| Timestamp           | Event                                                                                            | ATT&CK Technique                           |
+| ------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------ |
 | 2017-08-05 01:15:49 | Attacker downloads `company_contacts.xlsx` from froth.ly using Naenara browser via ExpressVPN HK | T1589 — Gather Victim Identity Information |
-| 2017-08-08 onward | 51 additional browsing events from Naenara UA against www.froth.ly | T1593 — Search Open Websites/Domains |
-| 2017-08-08 onward | Same Naenara UA hits brewertalk.com (gacrux) from IPs 136.0.0.125 and 136.0.2.138 | T1593 — Search Open Websites/Domains |
+| 2017-08-08 onward   | 51 additional browsing events from Naenara UA against www.froth.ly                               | T1593 — Search Open Websites/Domains       |
+| 2017-08-08 onward   | Same Naenara UA hits brewertalk.com (gacrux) from IPs 136.0.0.125 and 136.0.2.138                | T1593 — Search Open Websites/Domains       |
 
 ---
 

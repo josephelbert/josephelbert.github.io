@@ -1,0 +1,31 @@
+---
+layout: page
+title: Certifications
+icon: fas fa-certificate
+order: 4
+---
+
+## Active Certifications
+
+### CompTIA Security+
+- **Issuer:** CompTIA
+- **Status:** Active
+
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="5025dc52-b479-49ad-a153-57c4574f0d35" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+---
+
+### CompTIA Network+
+- **Issuer:** CompTIA
+- **Status:** Active
+
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="a7a15c7b-2c6a-4628-badb-dd7798925c9f" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+---
+
+## In Progress / Planned
+
+| Certification     | Target Date |
+| ----------------- | ----------- |
+| Hack The Box CDSA | 2026        |
+| Hack The Box CPTS | 2026        |
