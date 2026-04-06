@@ -57,13 +57,15 @@ Most web traffic arrives with common, predictable user agent strings — Chrome 
 
 **Step 1 — Baseline all user agents against froth.ly, ranked by volume:**
 
-```splunk
+```console
 index=botsv2 sourcetype=stream:http site=www.froth.ly
 | stats count by http_user_agent
 | sort - count
 ```
 
-This returned **71,419 events** across August 2017. The top results were exactly what you'd expect: Chrome 60 on macOS (17,048 hits), Splunk's own website monitoring agent (8,173 hits), and standard Firefox and Safari strings.
+![Image](/assets/img/splunk/botsv2/reconnaissance/image1.png)
+
+This returned **71,701 events** across August 2017. The top results were exactly what you'd expect: Chrome 60 on macOS (17,048 hits), Splunk's own website monitoring agent (8,173 hits), and standard Firefox and Safari strings.
 
 Buried in the long tail, one string immediately stood out:
 
@@ -82,20 +84,26 @@ Naenara Browser is the **official state-sanctioned web browser of North Korea**,
 
 **Step 3 — Drill into traffic from this specific user agent:**
 
-```splunk
+```console
 index=botsv2 sourcetype=stream:http site=www.froth.ly
   http_user_agent="Mozilla/5.0 (X11; U; Linux i686; ko-KP; rv: 19.1br) Gecko/20130508 Fedora/1.9.1-2.5.rs3.0 NaenaraBrowser/3.5b4"
 ```
+
+![Image](/assets/img/splunk/botsv2/reconnaissance/image2.png)
 
 This returned **51 events** starting **8/8/2017**, confirming the activity was clustered in a specific window and not scattered across the full month.
 
 **Step 4 — Map every system this user agent touched:**
 
-```splunk
+```console
 index=botsv2 sourcetype=stream:http
   "Mozilla/5.0 (X11; U; Linux i686; ko-KP; rv: 19.1br) Gecko/20130508 Fedora/1.9.1-2.5.rs3.0 NaenaraBrowser/3.5b4"
 | stats count by src dest
 ```
+
+![Image](/assets/img/splunk/botsv2/reconnaissance/image3.png)
+
+![Image](/assets/img/splunk/botsv2/reconnaissance/image4.png)
 
 | Source IP    | Destination IP | Count | System                  |
 | ------------ | -------------- | ----- | ----------------------- |
@@ -107,14 +115,20 @@ Three source IPs used this user agent string across two different internal serve
 
 **Step 5 — Confirm the traffic was one-directional (no C2 callback):**
 
-```splunk
+```console
 index=botsv2 sourcetype=stream:http src=85.203.47.86 dest=172.31.6.251 | stats count
 ```
+
+![Image](/assets/img/splunk/botsv2/reconnaissance/image5.png)
+
 → **51 events** (inbound to Frothly)
 
-```splunk
-index=botsv2 sourcetype=stream:http dest=85.203.47.86 src=172.31.6.251 | stats count
+```console
+index=botsv2 sourcetype=stream:http src=172.31.6.251 dest=85.203.47.86 | stats count
 ```
+
+![Image](/assets/img/splunk/botsv2/reconnaissance/image6.png)
+
 → **0 events** — no return traffic from Frothly back to the attacker IP. This is consistent with passive reconnaissance browsing, not a command-and-control channel.
 
 **Step 6 — OSINT on 85.203.47.86:**
@@ -124,7 +138,7 @@ index=botsv2 sourcetype=stream:http dest=85.203.47.86 src=172.31.6.251 | stats c
 | DomainTools WHOIS    | Hong Kong, ASN 133752, LEASEWEB-APAC-HKG-10                         |
 | RIPE WHOIS           | VPN-Services, 2 Chun Yat Street, Tseung Kwan O Industrial Estate HK |
 | Team Cymru IP-to-ASN | `AS133752 \| 85.203.47.86 \| LEASEWEB APAC, HK`                     |
-| Route lookup         | 85.203.0/18 via **ExpressVPN / Falco Networks (AS45187)**           |
+| More RIPE Info       | 85.203.47.0/24 via **ExpressVPN / Falco Networks (AS45187)**        |
 
 The attacker routed traffic through an **ExpressVPN exit node in Hong Kong** — a common tradecraft technique for masking true origin. The use of a commercial VPN means this IP alone cannot establish attribution.
 
@@ -163,15 +177,7 @@ T1593 covers adversaries who search freely available websites and company domain
 
 By clicking into the `http_content_type` field within the 51 events from the Naenara user agent, content type distribution revealed:
 
-| Content Type                                                          | Count | %        |
-| --------------------------------------------------------------------- | ----- | -------- |
-| text/html                                                             | 30    | 58.8%    |
-| text/javascript                                                       | 9     | 17.6%    |
-| text/css                                                              | 7     | 13.7%    |
-| text/html; charset=UTF-8                                              | 2     | 3.9%     |
-| **application/vnd.openxmlformats-officedocument.spreadsheetml.sheet** | **1** | **1.9%** |
-| image/jpeg                                                            | 1     | 1.9%     |
-| image/png                                                             | 1     | 1.9%     |
+![Image](/assets/img/splunk/botsv2/reconnaissance/image7.png)
 
 An Excel spreadsheet (`.xlsx`) was served to this browser. That is not a typical web page asset.
 
@@ -184,9 +190,7 @@ index=botsv2 sourcetype=stream:http site=www.froth.ly
 | table _time src dest uri_path url
 ```
 
-| Timestamp           | Source       | Destination  | File                           | Full URL                                          |
-| ------------------- | ------------ | ------------ | ------------------------------ | ------------------------------------------------- |
-| 2017-08-05 01:15:49 | 85.203.47.86 | 172.31.6.251 | `/files/company_contacts.xlsx` | `http://www.froth.ly/files/company_contacts.xlsx` |
+![Image](/assets/img/splunk/botsv2/reconnaissance/image8.png)
 
 **Hypothesis confirmed.** The attacker downloaded `company_contacts.xlsx` from Frothly's publicly accessible web server on **August 5, 2017 at 1:15 AM** — nearly three days before the bulk of the Naenara browsing activity on 8/8. This file likely contained employee names, email addresses, phone numbers, and org structure — exactly the kind of targeting data needed for spearphishing.
 

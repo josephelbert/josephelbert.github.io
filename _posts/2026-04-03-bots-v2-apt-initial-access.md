@@ -51,34 +51,29 @@ The adversary will attempt to establish a foothold within Frothly by sending a s
 
 **Step 1 — Find all email attachment filenames in the dataset:**
 
-```splunk
+```console
 index=botsv2 sourcetype=stream:smtp
 ```
 
-This returned **686,428 events** across August 2017. Clicking the `attach_filename()` field in the sidebar revealed 6 values, present in only 0.002% of events — a tiny slice worth examining closely:
+![Image](/assets/img/splunk/botsv2/initial-access/image1.png)
 
-| Filename                             | Count |
-| ------------------------------------ | ----- |
-| Malware Alert Text.txt               | 4     |
-| invoice.zip                          | 4     |
-| image.png                            | 2     |
-| GoT S7E2 BOTS.BOTS.BOTS.4kv.torrent  | 1     |
-| Office2016_Patcher_For_OSX.torrent   | 1     |
-| Sacchromyces_cervivisiae_patent.docx | 1     |
+This returned **669,179 events** across August 2017. Clicking the `attach_filename()` field in the sidebar revealed 6 values, present in only 0.002% of events — a tiny slice worth examining closely.
 
 Two filenames stood out immediately: `Malware Alert Text.txt` and `invoice.zip`. The torrents and `.docx` are noise. Narrowing the time window to August 1–23 to focus on the pre-attack period dropped the pool to **662,422 events** while keeping the same suspicious filenames.
 
 **Step 2 — Isolate the invoice.zip attachment:**
 
-```splunk
-index=botsv2 sourcetype=stream:smtp attach_filename()=invoice.zip
+```console
+index=botsv2 sourcetype=stream:smtp attach_filename{}=invoice.zip
 ```
+
+![Image](/assets/img/splunk/botsv2/initial-access/image2.png)
 
 → **4 events**, all on **8/23/17 at approximately 8:27 PM**. All four events shared identical metadata — a strong indicator this was a coordinated send to multiple targets simultaneously.
 
 **Step 3 — Extract all contextual clues from the invoice.zip emails:**
 
-Expanding the field sidebar revealed the complete picture of the phishing campaign:
+Expanding each field in the sidebar revealed the complete picture of the phishing campaign:
 
 | Field                             | Value                                                                     |
 | --------------------------------- | ------------------------------------------------------------------------- |
@@ -97,18 +92,11 @@ The `application/octet-stream` content type is significant — it is the default
 
 Examining the raw `content` field of one of the events revealed a full SMTP header, including the SPF authentication results line:
 
-```
-Authentication-Results: spf=pass (sender IP is 185.83.51.21)
-smtp.mailfrom=smtp12.ymlpsvr.com; froth.ly; dkim=none
-```
+![Image](/assets/img/splunk/botsv2/initial-access/image3.png)
 
-The four `src_ip` values (104.47.x.x) are Microsoft Exchange Online Protection relay servers — the mail routing infrastructure, not the origin. The true sending IP is **185.83.51.21**. This can be extracted programmatically:
+The four `src_ip` values (104.47.x.x) are Microsoft Exchange Online Protection relay servers — the mail routing infrastructure, not the origin. The true sending IP is **185.83.51.21**. This can be extracted from the content section as well:
 
-```splunk
-index=botsv2 sourcetype=stream:smtp attach_filename()=invoice.zip
-| rex field=content "sender IP is (?<sender_ip>\d+\.\d+\.\d+\.\d+)"
-| search sender_ip=185.83.51.21
-```
+![Image](/assets/img/splunk/botsv2/initial-access/image4.png)
 
 → Confirmed 4 events, same four recipients.
 
@@ -118,6 +106,8 @@ The `content_body` field contained the social engineering lure:
 
 > *"As we have not received a service cessation letter, I am assuming that you might have accidentally overlooked this invoice 02/160000506500 (Unpaid) for 10,000 GBP. Should you wish to bring an end to the agreement please let us know. Otherwise early withdrawal penalties will apply next month. Please refer to the attached document for payment details. Due to the personal nature of the account we have added a password to the document. Please enter the password (912345678)."*
 
+![Image](/assets/img/splunk/botsv2/initial-access/image5.png)
+
 Classic financial urgency lure. The password-protected ZIP is a deliberate evasion technique — encrypted archives cannot be scanned by most email security gateways.
 
 **Step 6 — OSINT on the sender infrastructure:**
@@ -126,15 +116,15 @@ The four `src_ip` values all resolved to Microsoft Exchange Online Protection re
 
 The true sending IP, **185.83.51.21**, told a more interesting story:
 
-| Tool    | Finding                                                            |
-| ------- | ------------------------------------------------------------------ |
-| Censys  | Hostname: smtp12.ymlpsvr.com, Belgium (Brussels)                   |
-| Network | YMLP — YourMailingListProvider.com (commercial bulk email service) |
-| ATT&CK  | T1583.006 — Acquire Infrastructure: Web Services                   |
+| Tool   | Finding                                                            |
+| ------ | ------------------------------------------------------------------ |
+| Censys | Hostname: smtp12.ymlpsvr.com, Belgium (Brussels)                   |
+| Google | YMLP — YourMailingListProvider.com (commercial bulk email service) |
+| ATT&CK | T1583.006 — Acquire Infrastructure: Web Services                   |
 
 The attacker registered with a commercial bulk mailing service to send the phishing campaign. This is a common resource development technique — it provides legitimate-looking sending infrastructure, high deliverability, and built-in anonymity.
 
-**Step 7 — WHOIS on urinalysis.com:**
+**Step 7 — WHOIS Search on urinalysis.com:**
 
 | Field      | Value                                       |
 | ---------- | ------------------------------------------- |
@@ -150,29 +140,27 @@ An almost 20-year-old domain registered via Gmail with dozens of co-hosted sites
 
 Searching for all emails from the same sender across the full time window revealed two separate campaigns:
 
-```splunk
+```console
 index=botsv2 sourcetype=stream:smtp sender="Jim Smith <jsmith@urinalysis.com>"
-| table _time recipient subject attach_filename() attach_size() attach_content_decoded_md5_hash()
+| table _time recipient subject attach_filename{} attach_size{} attach_content_decoded_md5_hash{}
 | sort recipient
 ```
 
-→ **8 events total** — two separate waves targeting the exact same four recipients:
+![Image](/assets/img/splunk/botsv2/initial-access/image6.png)
 
-| Wave | Date       | Subject     | Attachment             | Size         | Result        |
-| ---- | ---------- | ----------- | ---------------------- | ------------ | ------------- |
-| 1    | 2017-08-10 | Invoice Doc | Malware Alert Text.txt | 256 bytes    | **Blocked**   |
-| 2    | 2017-08-23 | Invoice     | invoice.zip            | 22,578 bytes | **Delivered** |
+→ **8 events total** — two separate waves targeting the exact same four recipients
 
 **Step 9 — Decode Malware Alert Text.txt:**
 
 The 256-byte `.txt` file from Wave 1 had a `Content-Transfer-Encoding: base64` header. Decoding it in CyberChef (From Base64, Remove Non-Alphabet Characters) revealed:
 
+```console
+index=botsv2 sourcetype=stream:smtp attach_filename{}="Malware Alert Text.txt" | table _time recipient subject content{}
 ```
-Malware was detected in one or more attachments included with this message.
-Action: All attachments have been removed.
-invoice.doc    Trojan.ZVEJ-2
-invoice.doc    097M/Donoff!rfn
-```
+
+![Image](/assets/img/splunk/botsv2/initial-access/image7.png)
+
+![Image](/assets/img/splunk/botsv2/initial-access/image8.png)
 
 Wave 1 was not a `.txt` file — it was the quarantine notification from Frothly's email security gateway. The original attachment was `invoice.doc`, detected as a Trojan (Donoff is a well-known malicious macro dropper family). The attacker saw it was blocked and adapted: the second attempt used a **password-encrypted ZIP** to bypass the same scanner.
 
@@ -224,33 +212,37 @@ With the spearphishing delivery confirmed, the adversary relied on a user openin
 
 **Step 1 — Hunt for invoice.zip across all non-email sourcetypes:**
 
-```splunk
+```console
 index=botsv2 sourcetype!=stream:smtp invoice.zip
 ```
+
+![Image](/assets/img/splunk/botsv2/initial-access/image9.png)
 
 Time-boxed to **Wednesday, August 23, 2017** — the day the second wave was delivered. This returned **5 events**, all on a single host: **wrk-btun**.
 
 The sourcetype breakdown was immediately telling:
 
-| Sourcetype                                          | Count |
-| --------------------------------------------------- | ----- |
-| XmlWinEventLog:Microsoft-Windows-Sysmon/Operational | 2     |
-| WinHostMon                                          | 1     |
-| WinRegistry                                         | 1     |
-| wineventlog                                         | 1     |
+![Image](/assets/img/splunk/botsv2/initial-access/image10.png)
 
 Sysmon telemetry, registry writes, and Windows Event Logs all touching `invoice.zip` on `wrk-btun` — the workstation belonging to **Billy Tun**, one of the four targeted recipients.
 
-**Step 2 — Isolate Sysmon events for invoice.zip:**
+**Step 2 — Find Windows Event Logs and Registry, then Isolate Sysmon events for invoice.zip:**
 
-```splunk
-index=botsv2 sourcetype!=stream:smtp invoice.zip
-  sourcetype="XmlWinEventLog:microsoft-windows-sysmon/operational"
+```console
+index=botsv2 sourcetype!=stream:smtp invoice.zip sourcetype!="xmlwineventlog:microsoft-windows-sysmon/operational"
 ```
 
-→ **3 events** on wrk-btun during the execution window:
+![Image](/assets/img/splunk/botsv2/initial-access/image11.png)
 
-**Event 1 — 8/23/17 20:38:12 PM — Process Create (Sysmon EventID 1):**
+```console
+index=botsv2 invoice.zip sourcetype="xmlwineventlog:microsoft-windows-sysmon/operational"
+```
+
+![Image](/assets/img/splunk/botsv2/initial-access/image12.png)
+
+→ **3 Windows Events** and **2 Sysmon Events** related to invoice.zip on wrk-btun during the execution window:
+
+**Sysmon Event 2 — 8/23/17 8:28:55 PM — Process Create (Sysmon EventID 1):**
 
 ```
 Image:          C:\Program Files (x86)\Microsoft Office\Root\Office16\WINWORD.EXE
@@ -262,7 +254,7 @@ Computer:       wrk-btun.frothly.local
 
 Billy Tun double-clicked `invoice.zip` in Explorer, which extracted `invoice.doc` to a temp folder and opened it in Word. The `/o "u"` flag is Word's "open with update links" switch — relevant because it can trigger automatic content execution.
 
-**Event 2 — 8/23/17 20:41:53 PM — Registry Set (Sysmon EventID 13):**
+**Windows Event 3 — 8/23/17 8:41:53 PM — Registry Set (Sysmon EventID 13):**
 
 ```
 key_path: Microsoft\Office\16.0\Word\reading locations\document 0\file path
@@ -272,15 +264,27 @@ Word wrote the opened document path to the registry — confirming the file was 
 
 **Step 3 — Examine all Sysmon activity on wrk-btun in the minutes following Word opening:**
 
-Setting the time range to **8/23/17 20:28:55 PM → 20:30:00 PM** and reversing the sort to show oldest-first revealed **25 events** on wrk-btun — a burst of process creation activity immediately after WINWORD.EXE launched.
+Setting the time range to **8/23/17 8:28:55 PM → 8:30:00 PM** and reversing the sort to show oldest-first revealed **25 events** on wrk-btun — a burst of process creation activity immediately after WINWORD.EXE launched.
+
+```console
+index=botsv2 host=wrk-btun sourcetype="xmlwineventlog:microsoft-windows-sysmon/operational" | reverse
+```
+
+![Image](/assets/img/splunk/botsv2/initial-access/image13.png)
 
 The key event:
 
-**8/23/17 20:28:55 PM — Sysmon Process Create:**
+**8/23/17 8:28:55 PM — Sysmon Process Create:**
+
+```console
+index=botsv2 invoice.zip sourcetype="xmlwineventlog:microsoft-windows-sysmon/operational" EventDescription="Process Create"
+```
+
+![Image](/assets/img/splunk/botsv2/initial-access/image14.png)
 
 ```
 Image:          C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
-CommandLine:    powershell -nop -sta -w 1 -enc <2842-character Base64 string>
+CommandLine:    powershell -nop -sta -w 1 -enc <Base64 encoded string>
 ParentCommandLine: C:\Program Files (x86)\Microsoft Office\Root\Office16\WINWORD.EXE
 User:           FROTHLY\billy.tun
 ```
@@ -291,18 +295,13 @@ This also surfaces a second ATT&CK technique intersecting the hunt:
 
 > **T1132.001 — Data Encoding: Standard Encoding** — The encoded command matches the "hunting for PowerShell surfaces data encoding" principle from the MITRE ATT&CK module. One hunt, two techniques.
 
+![Image](/assets/img/splunk/botsv2/initial-access/image15.png)
+
 **Step 4 — Decode the Base64 payload in CyberChef:**
 
 Running the 2,842-character encoded command through CyberChef (From Base64) produced a lengthy .NET-based PowerShell script. Key strings visible in the output:
 
-```
-[R.E.F.].A.S.S.E.M.B.L.Y.
-.S.y.s.t.e.m...M.a.n.a.g.e.m.e.n.t...A.u.t.o.m.a.t.i.o.n.
-.S.y.s.t.e.m...N.e.t...S.e.r.v.i.c.e.P.o.i.n.t.M.a.n.a.g.e.r.
-.S.y.s.t.e.m...N.e.t...W.e.b.C.l.i.e.n.t.
-.S.y.s.t.e.m...N.e.t...H.e.a.d.e.r.s...A.d.d.
-.S.y.s.t.e.m...N.e.t...C.r.e.d.e.n.t.i.a.l.C.a.c.h.e.
-```
+![Image](/assets/img/splunk/botsv2/initial-access/image16.png)
 
 The decoded payload was a **PowerShell Empire** (or equivalent framework) stager — loading `System.Management.Automation` and `System.Net.WebClient` assemblies in memory, setting up HTTP callbacks, and configuring credential and proxy handling. This is fileless post-exploitation staging designed to pull down a second-stage implant from a C2 server entirely in memory.
 
@@ -316,7 +315,7 @@ The decoded payload was a **PowerShell Empire** (or equivalent framework) stager
 | File executed    | `C:\Users\billy.tun\AppData\Local\Temp\Temp1_invoice.zip\invoice.doc` |
 | Parent process   | Explorer.EXE (user double-clicked the file)                           |
 | Child process    | WINWORD.EXE → PowerShell (macro execution)                            |
-| PowerShell flags | `-nop -sta -w 1 -enc` (hidden, no profile, encoded)                   |
+| PowerShell flags | `-nop -sta -w 1 -enc` (hidden, no profile, encoded string)            |
 | Payload type     | PowerShell Empire-style in-memory stager                              |
 
 **Hypothesis confirmed.** Billy Tun opened `invoice.doc` extracted from the phishing ZIP. The document contained a malicious macro that immediately spawned an encoded PowerShell stager — a fileless implant loader designed to pull a second-stage payload from a remote C2.
@@ -344,9 +343,9 @@ The decoded payload was a **PowerShell Empire** (or equivalent framework) stager
 
 The most reliable detection from this hunt is behavioral: the same `invoice.zip` (identical filename and byte size) delivered to four employees in rapid succession from an external sender. A SIEM rule flagging external emails where `attach_filename` and `file_size` match across more than two internal recipients within a short window would have fired on this pattern.
 
-```splunk
+```console
 index=botsv2 sourcetype=stream:smtp
-| stats dc(receiver) as recipient_count values(receiver) as recipients by sender attach_filename() attach_size()
+| stats dc(receiver) as recipient_count values(receiver) as recipients by sender attach_filename{} attach_size{}
 | where recipient_count > 2
 | sort - recipient_count
 ```
@@ -363,9 +362,9 @@ Add `urinalysis.com` and `185.83.51.21` to watchlists. Monitor for future connec
 
 **4. Alert on Office applications spawning PowerShell**
 
-The most actionable detection from this entire investigation is a single Sysmon rule: any process where `ParentImage` contains `WINWORD.EXE`, `EXCEL.EXE`, or `POWERPNT.EXE` and `Image` contains `powershell.exe`. This parent-child relationship is almost never legitimate and is the canonical macro execution indicator.
+The most actionable detection from this entire investigation is a single Sysmon rule: any process where `ParentImage` contains `WINWORD.EXE`, `EXCEL.EXE`, or `POWERPNT.EXE` and `Image` contains `powershell.exe`. This parent-child relationship is almost never legitimate and is the canonical macro execution indicator. For this specific scenario, it would not alert because PowerShell spawned from a process called wmiprvse.exe or WMI Provider Host. It is used by Windows to provide management information and control system components. Attackers use WMI to launch malicious PowerShell scripts to download or execute code while bypassing security, known as "living off the land" binaries. I could also make alerts for every common LOLBAS on Windows as well.
 
-```splunk
+```console
 index=botsv2 sourcetype="XmlWinEventLog:microsoft-windows-sysmon/operational"
   EventCode=1
 | where like(ParentCommandLine, "%WINWORD%") AND like(CommandLine, "%powershell%")
@@ -376,7 +375,7 @@ index=botsv2 sourcetype="XmlWinEventLog:microsoft-windows-sysmon/operational"
 
 The `-enc` flag combined with a long base64 string is a high-fidelity detection for obfuscated stager activity. Alert on Windows Event Code 4688 or Sysmon EventID 1 where `CommandLine` matches:
 
-```splunk
+```console
 index=botsv2 sourcetype="XmlWinEventLog:microsoft-windows-sysmon/operational"
   EventCode=1 CommandLine="*powershell*" CommandLine="* -enc *"
 | table _time host User CommandLine
